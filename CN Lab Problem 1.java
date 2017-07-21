@@ -1,8 +1,12 @@
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Scanner;
 
 /**
@@ -11,7 +15,12 @@ import java.util.Scanner;
 
 /**
  * @author Kingpin007
- *
+ * Question : Using java
+ * 1) Print Local Host name.
+ * 2) Print local IP Address.
+ * 3) Print remote Host Name by giving its IP Address.
+ * 4) Print remote IP Address by giving its Host Name.
+ * 5) print the MAC Address of the Local Host.
  */
 public class Main {
 
@@ -22,6 +31,7 @@ public class Main {
 		// TODO Auto-generated method stub
 		Scanner input = new Scanner(System.in);
 		InetAddress remotehost = null,localhost = null,remoteIPAddressObject = null;
+		NetworkInterface networkInterfaces = null;
 		try {
 			remotehost = InetAddress.getByName(new URL("https://"+input.next()).getHost());
 		} catch (UnknownHostException e) {
@@ -41,6 +51,32 @@ public class Main {
 		byte[] remoteIPAddress = remotehost.getAddress();
 		String localIP = localhost.getHostAddress();
 		String localhostName = localhost.getHostName();
+		try {
+			networkInterfaces = NetworkInterface.getByInetAddress(localhost);
+		} catch (SocketException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		NetworkInterface ni = networkInterfaces; 
+		System.out.println("Interface Name: "+ni.getName());
+		System.out.println("Display Name: "+ni.getDisplayName());
+		byte[] macAddress = null;
+		try {
+			macAddress = ni.getHardwareAddress();
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			StringBuilder sb = new StringBuilder();
+			for(byte b : macAddress) {
+				sb.append(String.format("%02X", b));
+				sb.append(":");
+			}
+			sb.deleteCharAt(sb.length()-1);
+			String mac = new String(sb);
+			System.out.println("MAC Address: "+mac);
+		}catch(Exception e) {}
 		try {
 			remoteIPAddressObject = InetAddress.getByAddress(remoteIPAddress);
 		} catch (UnknownHostException e) {
